@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSRBC RULEBOOK</title>
+    <!-- Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="icon" rel="stylesheet">
+    <style>
+       /* Global Styles */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #F0EAD6; /* Slightly Yellow White Text */
+    background-color: #066839; /* Primary Background Color */
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 15%;
+    background-color: #0A5C36; /* Sidebar Background Color */
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full height */
+    overflow: hidden; /* Prevent overflow */
+}
+
+.logo {
+    width: 99%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    position: sticky; /* Keeps the logo fixed at the top */
+    top: 0;
+    z-index: 10;
+    background-color: #0A5C36; /* Match sidebar background */
+}
+
+.logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.sidebar h2 {
+    font-size: 1.5em;
+    margin: 0 0 10px 0;
+    text-align: center;
+    border-bottom: 2px solid #F0EAD6; /* Highlight Color */
+    padding-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allows TOC to grow and fill space */
+    overflow-y: auto; /* Enable scrolling for TOC */
+    max-height: calc(100vh - 190px); /* Ensure space for logo and copyright */
+    position: relative;
+}
+
+.sidebar li {
+    margin-bottom: 5px;
+    position: relative; /* Needed for the line positioning */
+    padding-left: 15px; /* Space for the line */
+}
+
+.sidebar li::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #18392B; /* Line color */
+    height: 100%;
+}
+
+.sidebar a {
+    color: #F0EAD6; /* Slightly Yellow White Text */
+    text-decoration: none;
+    padding: 6px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.sidebar a:hover {
+    background-color: #18392B; /* Hover color for Sidebar Links */
+}
+
+/* Copyright Notice */
+.copyright {
+    font-size: 0.8em;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #F0EAD6;
+    cursor: pointer;
+    margin-top: auto; /* Ensures it stays at the bottom */
+    background-color: #0A5C36; /* Match sidebar background */
+    position: sticky;
+    bottom: 0; /* Keeps it fixed at the bottom */
+    z-index: 10;
+}
+
+/* Content Styles */
+.content {
+    width: 85%;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #0F5132; /* Content Background Color */
+}
+
+.content section {
+    margin-bottom: 15px;
+    padding: 20px;
+    background-color: #087c44; /* Section Background Color */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.content h1, .content h2 {
+    margin: 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #F0EAD6; /* Highlight Color for Borders */
+}
+
+.content h3 {
+    margin: 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #F0EAD6; /* Highlight Color for Borders */
+}
+
+.content p {
+    margin: 10px 0;
+}
+
+.subsection {
+    background-color: #19573b; /* Heading 2 Background Color */
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+    transition: box-shadow 0.3s ease-in-out; /* Transition for glow effect */
+}
+
+.subsubsection {
+    background-color: #18392B; /* Heading 3 Background Color */
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: 40px;
+    transition: box-shadow 0.3s ease-in-out; /* Transition for glow effect */
+}
+
+.glow {
+    box-shadow: 0 0 15px 5px #F0EAD6 !important; /* Glow effect for clicked sections */
+}
+
+/* Custom Scrollbar Styles for Sidebar and TOC */
+.sidebar ul::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.sidebar ul::-webkit-scrollbar-thumb {
+    background-color: #18392B; /* Dark green color */
+    border-radius: 10px; /* Rounded corners */
+}
+
+.sidebar ul::-webkit-scrollbar-thumb:hover {
+    background-color: #1A4733; /* Lighter shade on hover */
+}
+
+.sidebar ul::-webkit-scrollbar-track {
+    background-color: #0A5C36; /* Sidebar background color */
+    border-radius: 10px;
+}
+
+/* Main Content Scrollbar */
+.content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #18392B;
+    border-radius: 10px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background-color: #1A4733;
+}
+
+.content::-webkit-scrollbar-track {
+    background-color: #0F5132;
+    border-radius: 10px;
+}
+/* Notification Bar Styles */
+.notification-bar {
+    background-color: #B22222; /* Red background color */
+    color: #F0EAD6; /* Slightly Yellow White Text */
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 15px auto;
+    max-width: 100%;
+    display: none; /* Initially hidden */
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); /* Red glow effect */
+    transition: opacity 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.notification-bar.show {
+    display: block;
+    opacity: 1;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 1); /* More intense glow when shown */
+}
+
+.notification-bar.active {
+    display: block; /* Show when active */
+}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo" onclick="scrollToTop()">
+                <img src="https://i.imgur.com/ScK1opE.png" alt="Logo">
+            </div>
+            <div>
+                <h2>Table of Contents</h2>
+                <ul id="toc">
+                    <!-- Table of Contents will be dynamically generated here -->
+                </ul>
+            </div>
+            <div class="copyright" onclick="incrementClickCount()">
+                © TSRB INDUSTRIES 2024
+            </div>
+        </aside>
+        <main class="content" id="content">
+            <div id="notificationBar" class="notification-bar">
+               test
+            </div>
+         
+            
+            <section id="section1">
+                <h1>SECTION 1: TSRB Championship Mission Statement</h1>
+                <p>The goal of the community and the purpose of this document is to establish a friendly environment
+                    where everyone can experience the best online sim racing has to offer. It is our mission to create a
+                    collaborative and encouraging community where everyone can improve and enjoy this shared hobby
+                    together.</p>
+            </section>
+
+            <section id="section2">
+                <h1>SECTION 2: Code of Conduct</h1>
+                <p>TSRB Championship is an inclusive sim racing community. Discussion of politics, religion, and/or
+                    other controversial topics is prohibited. Incidents of racism, discrimination, or hate speech will
+                    not be tolerated and will result in increasing timeouts, and bans for consistent offenders.</p>
+                <p>To report code of conduct or race incidents, the #Race-Control in the Discord open a ticket.</p>
+                <p><strong>Note:</strong> Read the posting guidelines beforehand.</p>
+            </section>
+
+            <section id="section3">
+                <h1>SECTION 3: General Rules</h1>
+                <div class="subsection" id="section3-1">
+                    <h2>3.1 Custom Teams</h2>
+                    <p>We require each driver to join a team and create two custom liveries. These must follow the Code
+                        of Conduct stated above. Further instructions for creating a team can be found in the
+                        #Team-Socials ‘Create a Team Guidelines’ thread on Discord.</p>
+                        <div class="subsubsection" id="section3-1-1">
+                            <h3>3.1.1 Driver Names</h3>
+                            <p>Upon signing up to the Championship, you must pick a first and surname. The use of one’s real
+                                name is discouraged. This name should be readable and pronounceable. Use of numbers,
+                                symbols, or any special characters (e.g., Â) are strictly not allowed.</p>
+                        </div>
+                        <div class="subsubsection" id="section3-1-2">
+                            <h3>3.1.2 Driver Numbers</h3>
+                            <p>Driver number 1 is reserved for the winner of the previous season. In the case of a
+                                multiclass season, it will be given to the winner of the High Class. All other Driver
+                                numbers are claimed on a first-come, first-served basis. Upon signing up to the
+                                Championship, you must enter your Driver name, number, and Discord username on the form
+                                within this channel #Driver-Numbers. The form will tell you if you picked a duplicate, but
+                                you can view all currently reserved driver numbers here.</p>
+                            <p><strong>Note:</strong> It is required for every driver to have their number within their
+                                Discord username (e.g., Sim Raisinblock | #37).</p>
+                            <p>Note that driver numbers are locked and cannot be changed, even during a new season.</p>
+                        </div>
+                </div>
+                <div class="subsection" id="section3-2">
+                    <h2>3.2 Assists and Cheating</h2>
+                    <p>Unless the car has assists by design, we do not allow any kind of assists. These will be
+                        automatically disabled by the server. TSRB Championship staff reserve the right to request
+                        personal replay files from any driver should they suspect use of third-party software for a
+                        performance advantage. If a driver is unable to provide the replay for the session that it was
+                        requested for, they will be required to submit a replay from the rest of the season. Failure to
+                        comply or a guilty verdict may result in a season or league ban.</p>
+                </div>
+                <div class="subsection" id="section3-3">
+                    <h2>3.3 Scoring</h2>
+                    <p>TSRB Championship races award championship points based on finishing order. These may be subject
+                        to change per season. Check the points reference tab on the championship page for a more
+                        detailed scoring breakdown.</p>
+                </div>
+                <div class="subsection" id="section3-4">
+                    <h2>3.4 Driver Divisions and Classes</h2>
+                    <p>On occasion, the TSRB Championship will be divided into two or three separate classes, known as
+                        Low, Standard, and High classes. It is up to teams to decide which class they fit best into.
+                        However, we always recommend that the Low class be reserved for lesser confident drivers,
+                        Standard for the average driver, and High for the most confident drivers.</p>
+                    
+                </div>
+                <div class="subsection" id="section3-5">
+                    <h2>3.5 Practice</h2>
+                    <p>Free practice sessions are available 24 hours a day throughout the week. They will have the same
+                        weather and conditions as qualifying and the race. Drivers are encouraged to practice the track
+                        and make adjustments to their setup. 
+
+<div class="subsubsection" id="section3-5-1">
+                        <h3>3.5.1 Required Laps</h3>
+                        <p>To ensure all drivers are procicient enoguh at a particular track, there is a minimum amount of laps
+they must complete through the week. We have divided them into three categoies.
+<li>Sub 1 Minute Lap: 60 laps</li>
+<li>1 Minute+ Lap: 40 laps</li>
+<li>~2 Minute Lap: 20 laps</li>
+<br>
+These are rough appriximations of how the requirements will be calculated. All laps must be completed at least 1 hour before the race at 7PM BST/GMT. Failure to complete your required laps by this time will
+mean you are unable to take part in the races.
+</p>
+                    </div>
+                </div>
+                <div class="subsection" id="section3-6">
+                    <h2>3.6 Wet Weather</h2>
+                    <p>From now on there is a possibility that every session will include rain. This requires every user 
+                        to be on the latest preview version of Custom Shaders Patch. During rainy sessions, it is up to the 
+                        driver to decide whether or not to switch to wet tyres. However, not switchig and as a result,
+                    driving dangerously will be seen as negligence and subject to penalisation.</p>
+                </div>
+            </section>
+
+            <section id="section4">
+                <h1>SECTION 4: Qualifying Rules</h1>
+                <p>Qualifying is held prior to race start and sets the starting order for the races based on each
+                    driver’s fastest lap time. Qualifying will typically be 15 minutes long, and class-only. If a driver
+                    has been issued a qualifying ban, the driver is prohibited from participating in the qualifying
+                    session and must stay in their pit box. Failure to serve a qualifying ban may result in a total
+                    disqualification, or the qualifying ban will carry over to the next race at the Safety Men’s
+                    discretion.</p>
+                <div class="subsection" id="section4-1">
+                    <h2>4.1 Blue Flags During Qualifying</h2>
+                    <p>After invalidating a lap, a driver is then required to yield and leave sufficient space on track
+                        such that they do not hinder any driver behind on a flying lap. Drivers are required to make a
+                        clear and obvious effort to slow their car off of the racing line so as to not hinder oncoming
+                        drivers on flying laps, and only return to the racing line given a sufficient gap to the next
+                        driver behind. Making a concerted effort to slow on a flying lap is construed as abandoning that
+                        flying lap, even if the lap is still valid. That driver is then required to yield and leave
+                        sufficient space on track such that they do not hinder any driver behind on a flying lap.
+                        Drivers are required to make a clear and obvious effort to slow their car off of the racing line
+                        so as to not hinder oncoming drivers on flying laps, and only return to the racing line given a
+                        sufficient gap to the next driver behind.</p>
+                </div>
+                <div class="subsection" id="section4-2">
+                    <h2>4.2 Overtaking During Qualifying</h2>
+                    <p>A driver is not allowed to overtake cars ahead that are on a flying valid lap unless it is clear
+                        and obvious that the car ahead has abandoned their lap and is leaving sufficient space to pass.
+                        Every driver is responsible to make sure there is a sufficient gap ahead at the start of a lap
+                        such that they will not overtake a car ahead on a flying lap.</p>
+                </div>
+                <div class="subsection" id="section4-3">
+                    <h2>4.3 Yellow Flags During Qualifying</h2>
+                    <p>Drivers on flying laps do not need to slow down or yield for yellow flags, but have the
+                        responsibility of avoiding collisions should there be an incident ahead. Do not report incidents
+                        where a lap was compromised due to avoiding a driver who has spun out and is stationary on
+                        track.</p>
+                </div>
+                <div class="subsection" id="section4-4">
+                    <h2>4.4 Pit Exit Line During Qualifying</h2>
+                    <p>During qualifying, drivers on a flying lap have the priority over cars exiting the pits. Take
+                        care not to impede those on a flying lap when exiting the pit lane. Note that the priority is
+                        reversed for the race in which cars exiting the pits and cars on track are both required to
+                        leave space for each other and all other racing rules apply. Not observing these rules may
+                        result in qualifying warnings leading to a qualifying ban in a driver's next race.</p>
+                </div>
+            </section>
+
+            <section id="section5">
+                <h1>SECTION 5: Racing Rules</h1>
+                <p>While we want to maintain fair and clean racing, accidents will happen. We will not tolerate abusing
+                    a driver that makes a mistake. While the Stewards will see most incidents happening on track, and
+                    deal punishments through Real Penalty, they won’t catch everything. We have a Stewarding process to
+                    handle all un-caught incidents through the #Race-Control forum in Discord.</p>
+                <p>While Discussion of these report threads is allowed in #Event-Chat, we will not accept excessive
+                    chatting inside of them.</p>
+                <div class="subsection" id="section5-1">
+                    <h2>5.1 Overlap</h2>
+                    <p>Overlap is defined by the front axle of the attacking car being alongside the rear axle of the
+                        defending car at the turn-in point of the defending car. This is not an exact science, so there
+                        is some leeway for drivers and Stewards to judge overlap.</p>
+                </div>
+                <div class="subsection" id="section5-2">
+                    <h2>5.2 Overtaking</h2>
+                    <p>In general, it is the responsibility of the car behind to choose a safe point to attempt an
+                        overtake, and to do so without causing an incident. Once the car behind establishes overlap, it
+                        becomes the responsibility of both drivers to avoid an incident. While cornering, the driver
+                        behind must have established overlap to the car in front at the lead driver's turn-in point for
+                        the corner before they should attempt an overtake. If there is no overlap at this point, the
+                        leading driver has the right to their racing line and does not need to leave space for the
+                        attacking driver. Any collision during an attempted overtake may be subject to a penalty. If a
+                        rear-end collision is predicted in a braking zone, it is recommended to aim for the outside of
+                        the corner to avoid contact. Note that the turn-in point is not the start of the braking zone;
+                        drivers can still out brake each other to establish overlap before turn-in.</p>
+                </div>
+                <div class="subsection" id="section5-3">
+                    <h2>5.3 Overtaking and Violating Track Limits</h2>
+                    <p>If an unfair advantage is gained from an off-track event, and an unfair advantage is gained from
+                        going off-track during an overtake (either as an attacker or defender), the position should be
+                        yielded to the other car, except if the off-track was made to avoid an incident. Stewards
+                        reserve the right to penalize keeping an unfair advantage from track limit violations.</p>
+                </div>
+                <div class="subsection" id="section5-4">
+                    <h2>5.4 Defending on the Straights and Squeezing</h2>
+                    <p>The car in front can choose any line they like to drive, as long as they are ahead of the car
+                        behind. However, they are only allowed to change direction once before the braking zone to
+                        defend, and can only defend one side of the road: either the inside, or the outside (i.e.,
+                        weaving is not allowed). Any reactionary move to cut off the trajectory of cars behind after the
+                        first defensive move is made is construed as blocking and subject to penalties at the steward's
+                        discretion. After making the one defensive move, the lead car may return to the racing line
+                        before braking only if they are fully clear ahead of the car behind. The defending car is
+                        allowed to begin squeezing the attacking car as long as their front axle is still ahead of the
+                        attacking car. The defending car is required to leave at least one car's width of space when
+                        doing so. If the attacking car is run off of the road due to changes in the track, the fault
+                        will be given to the defending car for failure to leave room.</p>
+                </div>
+                <div class="subsection" id="section5-5">
+                    <h2>5.5 Incidents During the Race/Failure to Hold Brakes/Unsafe Rejoins</h2>
+                    <p>If a driver has totally lost control of their car in an incident, they are required to hold their
+                        brakes until control is regained and there is a sufficient gap to rejoin the racing line. The
+                        goal is to be as predictable as possible so other drivers do not cause additional incidents. If
+                        a driver is off-track, they must return to the track in a safe and predictable manner, and yield
+                        to cars that are on the racing line. More often than not, this means rejoining parallel to the
+                        track, off of the racing line. Unsafe rejoins and/or failure to hold brakes may result in a
+                        penalty at the discretion of the stewards.</p>
+                </div>
+                <div class="subsection" id="section5-6">
+                    <h2>5.6 Avoiding Incidents</h2>
+                    <p>Stewards will review incidents and assess whether or not more cars were indirectly involved.
+                        Actions such as forcing 3-wide, risky defending, and risky overtaking in the immediate vicinity
+                        of other cars can lead to such incidents. If cars that were indirectly involved are found to be
+                        at fault, they may be penalized by the stewards.</p>
+                </div>
+                <div class="subsection" id="section5-7">
+                    <h2>5.7 Yellow Flags</h2>
+                    <p>Under yellow flags, drivers are advised to drive cautiously and approach the incident prepared to
+                        reduce speed and take evasive action, if necessary. Stewards will penalize incidents caused
+                        under yellow flags more severely.</p>
+                </div>
+                <div class="subsection" id="section5-8">
+                    <h2>5.8 Blue Flags</h2>
+                    <p>In a race, a blue flag being shown means a car is about to lap a driver. When under blue flags, a
+                        driver is not allowed to defend from the lapping car when the lapping car makes an overtaking
+                        attempt. This does not mean the blue-flagged driver has to immediately slow down to let the
+                        lapping car through. Instead, it is up to the car behind to make a safe overtake, and for the
+                        lapped car to make sure they do not defend going into the next corner. Blue-flagged drivers
+                        should drive predictably and hold their line to avoid an incident with the lapping car. With
+                        that being said, it is still advised that blue-flagged drivers make it easy for lapping cars to
+                        pass them as this most often leads to the least amount of time lost for both cars. The best way
+                        to accomplish this is to lift while off of the racing line in the middle of the straight.
+                        Drivers must yield the position to the lapping car within one full lap starting at the first
+                        marshal post to wave blue flags, regardless of pit strategy.</p>
+                </div>
+                <div class="subsection" id="section5-9">
+                    <h2>5.9 Unlapping</h2>
+                    <p>Drivers are allowed to unlap themselves from cars that are laps ahead. Please only do so if you
+                        are confident that you are significantly faster than the car ahead and can pull away from them.
+                        After you have unlapped yourself, remember you are still not allowed to defend as long as there
+                        are blue flags.</p>
+                </div>
+                <div class="subsection" id="section5-10">
+                    <h2>5.10 Pit Lane Etiquette</h2>
+                    <p>Once cleared of the white line, drivers are free to race. Dotted white lines may be crossed
+                        freely. Incidents resulting from pit line infringements will be punished more severely. During
+                        qualifying sessions, drivers exiting the pits must not interfere with drivers currently running
+                        hot laps. During a race session, drivers leaving the pits have priority, therefore, must be left
+                        space by drivers on track. Drivers are expected to adhere to pit lane limits at all times.
+                        Stewards may enforce pit entry/exit requirements during the race defined by failure to keep 4
+                        wheels within the white lines on pit entry/exit. Drivers are not required to signal entering the
+                        pits (although it can be helpful at some circuits).</p>
+                </div>
+            </section>
+
+            <section id="section6">
+                <h1>SECTION 6: Real Penalty</h1>
+                <p>All of our in-race stewarding is done through the Real Penalty app (RP). It is a requirement to join
+                    our server and has a whole host of capabilities.</p>
+                <div class="subsection" id="section6-1">
+                    <h2>6.1 Rolling Starts</h2>
+                    <p>To get clean and fair starts, our races will begin with rolling starts. Usually, the grid will be
+                        split, behind two pace cars. Once you get onto the grid, you must not move until the car in
+                        front of you does. While doing the pace lap, you must keep the car in front outside of the
+                        Helicorsa radar (included with RP). This ensures equal spacing, and that no pileups happen.</p>
+                    <p>Near the end of the lap, the yellow safety car light will go out, this is your signal to get
+                        ready for race start. Please note, you must adhere to the speed limit displayed on screen until
+                        after the green light is shown. If you break the speed limit you will be served a Drive Through
+                        (DT) penalty. We recommend enabling the ‘Pit Limiter’ hotkey, which will ensure you stay on the
+                        80kph speed limit.</p>
+                    <p>Once the green light is shown, and the race starts, you must not overtake until you pass the
+                        start/finish line.</p>
+                </div>
+                <div class="subsection" id="section6-2">
+                    <h2>6.2 Full Course Yellow</h2>
+                    <p>In the event of a large crash, the Full Course Yellow (FCY) will be initiated. Once the Full
+                        Course Yellow is enabled, there will be a countdown of 10 seconds. This is your opportunity to
+                        slow down to the speed limit (kph) and form a single file line.</p>
+                </div>
+                <div class="subsection" id="section6-3">
+                    <h2>6.3 Safety Car</h2>
+                    <p>Once a safety car is deployed, all cars can continue at a normal speed until they catch up with
+                        it. However, overtaking is strictly prohibited anywhere on the track. Once caught up to the
+                        safety car, you must remain in a single file lane. Once the safety car enters the pit lane, it
+                        is up to the leading car to dictate the pace. Much like the rolling starts, the racing must not
+                        resume until you cross the start/finish.</p>
+                </div>
+            </section>
+
+            <section id="section7">
+                <h1>SECTION 7: Infractions</h1>
+                <p>Penalties will be given out in two separate forms. During the race, you will receive penalties
+                    through Real Penalty, and afterwards, through Discord. Penalties may not be appealed. TSRB
+                    Championship will not tolerate on-track retaliation of any kind. Any on-track retaliation will
+                    result in a race disqualification or a one-race ban. Depending on the severity, it may be escalated
+                    up to an immediate ban from the league.</p>
+                
+                <!-- 7.1 Qualifying Penalties -->
+                <div class="subsection" id="section7-1">
+                    <h2>7.1 Qualifying Penalties</h2>
+                    <p>Qualifying penalties are noted separately from race penalties. Stewards may apply qualifying
+                        warnings which include, but are not limited to, pit exit infractions, hindering/impeding,
+                        overtaking, and causing a collision. Two qualifying warnings will result in a qualifying ban,
+                        but no penalty points are applied.</p>
+                </div>
+            
+                <!-- 7.2 Race Penalties -->
+                <div class="subsection" id="section7-2">
+                    <h2>7.2 Race Penalties</h2>
+                    <p>No Further Action (NFA): When the stewarding team believes there to be no incident, or no need to
+                        apply a penalty onto a single driver (i.e.: a racing incident).</p>
+                    <p>Warning: The smallest penalty denomination that stewards may issue. Warnings may be issued to
+                        call attention to aggressive or unsafe driving behaviors such as excessive bump and runs,
+                        excessive weaving, moving under braking, etc. One penalty point will be issued for every two
+                        warnings awarded within the span of two races.</p>
+                    <p>Penalty Points (PP): For mild to severe infringement of the sporting regulations, the stewards
+                        will issue penalty point(s) against the infringing driver's License.</p>
+                    <p>Cut Penalties: During a race, you will be warned for cutting 3 times, via Real Penalty. These are
+                        automatic warnings. Upon your fourth cut, you will receive a Drive Through (DT) penalty. Once
+                        received, you will have 2 laps to drive through the pit lane. We recommend completing your DT as
+                        early as possible, as if you cross the start/finish when taking the DT on the final lap, Real
+                        Penalty may think you failed to complete it.</p>
+                    <p>Time Penalties: For mild to severe infringement of the sporting regulations, the stewards will
+                        issue time penalties that will be added to the total race time of the offending driver in the
+                        respective race.</p>
+                    <ul>
+                        <li>NFA (No Further Action): No incident/Racing Incident.</li>
+                        <li>Warning: For incidents that need to be pointed out, but not enough to warrant a penalty.
+                        </li>
+                        <li>Warning +5s: For slightly more severe incidents that barely affected anyone else.</li>
+                        <li>10s: This penalty will be given for mistakes that cost other drivers any amount of time.
+                        </li>
+                        <li>20s: This penalty will be given for other driver(s) loss of positions/blatant disregard for
+                            racing regulations.</li>
+                        <li>30s: This penalty will be given for the most severe of incidents, before a total
+                            disqualification (DQ).</li>
+                        <li>Drive Through (DT): Drive through, if failed to complete by the checkered flag, 20s will be
+                            added to final race time.</li>
+                    </ul>
+            
+                    <!-- Nesting subsections within 7.2 Race Penalties -->
+                    <div class="subsubsection" id="section7-2-1">
+                        <h3>7.2.1 Penalty Point Structure</h3>
+                        <p>Penalty Points will be applied to a driver’s license for mild-to-severe infractions, at the
+                            Steward’s discretion. PPs can be applied for repeat offenses, or if the warranted penalty simply
+                            isn’t enough. Once a driver accrues 3 penalty points, they will receive a race ban. Multiple
+                            penalty point infractions acquired in the same race or consecutive races will result in an
+                            additional penalty point being applied. Penalty points will be calculated on a 6 race rolling
+                            basis. After the 6 races have been completed, the PP will be removed.</p>
+                    </div>
+            
+                    <div class="subsubsection" id="section7-2-2">
+                        <h3>7.2.2 Returning Position</h3>
+                        <p>If a driver waits to return the position after causing an incident, the time penalty will be
+                            reduced by one tier. However, penalty points issued will remain the same.</p>
+                    </div>
+            
+                    <div class="subsubsection" id="section7-2-3">
+                        <h3>7.2.3 Lap One Incidents</h3>
+                        <p>Lap 1 incidents be classified as L1REPORT in #Race-Control. It is encouraged to submit reports
+                            for lap 1 incidents because they often detrimentally affect the race outcome. All lap one
+                            incidents will have the penalty escalated by one tier because lap 1 incidents often
+                            detrimentally affect the race outcome. For severe cases, an additional penalty may be
+                            administered in the form of a 30s time penalty applied to the offending driver's race.</p>
+                    </div>
+            
+                </div>
+                <!-- Continue with other sections as needed -->
+            </section>
+
+            <section id="section8">
+                <h1>SECTION 8: Team Management</h1>
+                <div class="subsection" id="section8-1">
+                    <h2>8.1 Managing your team</h2>
+                    <p>Upon your team signing up, you will be entered into the TSRB Championship’s economy simulation.
+                        While managing your team budget isn’t required, and your team will stay afloat by itself, you
+                        can use it to gain some advantages.</p>
+                </div>
+                <div class="subsection" id="section8-2">
+                    <h2>8.2 Money</h2>
+                    <p>A new team will start with $1,000,000 in cash. Things such as entering the season, each race,
+                        developing a livery and signing new drivers will incur a cost. At the end of the season, the
+                        team will receive winnings based on their performance. These winnings can be increased by 15%
+                        for every driver that is signed up to the Patreon.</p>
+                </div>
+                <div class="subsection" id="section8-3">
+                    <h2>8.3 Tax</h2>
+                    <p>At the end of every season, tax will be placed on each team, with the percentage being based on
+                        their total balance after season winnings. After all the teams have been taxed, the sum will be
+                        totaled, and an equal amount will be sent out to all participating teams. This means the teams
+                        that didn’t perform so well will profit from the taxation, and wealth will be somewhat
+                        distributed.</p>
+                </div>
+                <div class="subsection" id="section8-4">
+                    <h2>8.4 Purchases</h2>
+                    <p>If you would like to buy one of the purchasables, send money to another team, etc. you can put
+                        your transaction in the #Team-Bidness channel. Once your transaction is complete, a staff member
+                        will react with a check mark, and you will be able to see your transaction on the ‘Recent
+                        Transactions’ section of the spreadsheet. If you would like to see an in-depth list of all
+                        transactions a team has made recently, you can view the Team Balances sheet.</p>
+                        <div class="subsubsection" id="section8-4-1">
+                            <h3>8.4.1 Purchase Timing</h3>
+                            <p>If you would like to make any changes to your team, it must be done at least 24 hours before the race. 
+                                After this point (8PM BST/GMT Saturday) it will be considered too late. Likewise, we urge you to test new
+                                changes before this point.
+                            </p>
+                        </div>
+                        <div class="subsubsection" id="section8-4-2">
+                            <h3>8.4.2 Driver Swaps</h3>
+                            <p>Each team is limited to 1x driver swap per season.
+                            </p>
+                        </div>
+                </div>
+                <div class="subsection" id="section8-5">
+                    <h2>8.5 Debt</h2>
+                    <p>If a team goes into debt and is unable to afford the entry fees to the next season, it will be
+                        available for purchase. The price will be calculated by the amount of debt, and any assets or
+                        active investments they have. This will either be done on a first come, first served basis, or
+                        whomever the team principal would like to sell to. Once a team is purchased, the new principal
+                        will have full control. This is also applicable to teams that are not in debt.</p>
+                </div>
+                <div class="subsection" id="section8-6">
+                    <h2>8.6 Limits of the economy</h2>
+                    <p>Anything is possible within the economy system. Everything is for sale, you can transfer cash to
+                        other teams for any reason. The only limit is your imagination (and sometimes mischievousness).
+                        It is advised to take note from real business, or motorsport team’s practices to get the most
+                        out of it.</p>
+                    <p>If you would like to open a storefront or purchase something nobody is offering, you can do so in
+                        the #marketplace forum on the Discord.</p>
+                </div>
+            </section>
+
+            <section id="appendixA">
+                <h1>APPENDIX A: Changelog</h1>
+                <!-- Add changelog content here if needed -->
+            </section>
+        </main>
+    </div>
+
+
+
+    <!-- Quill.js Script -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <script>
+        // Quill.js Editor Initialization
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['clean'] // remove formatting button
+                ]
+            }
+        });
+
+        // JavaScript for dynamically generating the Table of Contents
+        document.addEventListener('DOMContentLoaded', function () {
+            const toc = document.getElementById('toc');
+            const content = document.getElementById('content');
+
+            // Find all headings in the content
+            const headings = content.querySelectorAll('h1, h2, h3');
+            const tocList = document.createDocumentFragment();
+
+            headings.forEach(heading => {
+                const tocItem = document.createElement('li');
+                tocItem.style.marginLeft = (heading.tagName === 'H2') ? '10px' :
+                    (heading.tagName === 'H3') ? '20px' : '0';
+
+                // Create an anchor element
+                const anchor = document.createElement('a');
+                anchor.textContent = heading.textContent;
+                anchor.href = `#${heading.parentElement.id}`;
+                anchor.style.color = '#F0EAD6'; /* Slightly Yellow White Text */
+
+                // Append anchor to the list item
+                tocItem.appendChild(anchor);
+
+                // Append list item to the Table of Contents
+                tocList.appendChild(tocItem);
+            });
+
+            toc.appendChild(tocList);
+
+            // Smooth scrolling for the TOC links and glow effect
+            toc.querySelectorAll('a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    // Apply glow effect to the target section
+                    target.classList.add('glow');
+                    setTimeout(() => {
+                        target.classList.remove('glow');
+                    }, 800); // Glow effect duration
+                });
+            });
+        });
+
+        // Function to scroll to the top of the page
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Secret Admin Panel Logic
+        let clickCount = 0;
+        function incrementClickCount() {
+            clickCount++;
+            if (clickCount === 30) {
+                toggleAdminPanel(true);
+                clickCount = 0; // reset counter
+            }
+        }
+
+        function toggleAdminPanel(show) {
+            const adminPanel = document.getElementById('adminPanel');
+            adminPanel.style.display = show ? 'block' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+    const notificationBar = document.getElementById('notificationBar');
+
+    function showNotification(message) {
+        if (message && message.trim() !== "") {
+            notificationBar.textContent = message;
+            notificationBar.classList.add('active');
+        } else {
+            notificationBar.classList.remove('active');
+        }
+    }
+
+    // Example usage: Enable the notification with a message
+    showNotification('Welcome to the all new TSRBC Handbook. Please read through it, there are a lot of changes! In future, new additions/removals from the rules will be announced in this red box, alongside the changelog appendix at the bottom.');
+
+    // Example usage: Disable the notification by passing an empty string
+    // showNotification('');
+});
+
+    </script>
+</body>
+
+</html>
